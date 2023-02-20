@@ -1,8 +1,12 @@
+library(tidyverse)
+#loading AC_data
 ac_data <- read.csv("accident.csv")
-view(ac_data)
-ac_data <- ac_data %>% 
+#loading GSA_codes
+gsa_codes <- read.csv("FRPP_GLC_-_United_States_fEB_16_20233.csv")
 
-  
+ac_data <- ac_data %>% mutate(States = states[STATE])
+
+# Adding new column for all of the state names.
 states <- c('Alabama','Alaska','Arizona','Arkansas', 
     'California','Colorado','Connecticut', 'Delaware', 
     'District of Columbia','Florida','Georgia','Hawaii', 
@@ -16,4 +20,15 @@ states <- c('Alabama','Alaska','Arizona','Arkansas',
     'Rhode Island', 'South Carolina','South Dakota','Tennessee', 
     'Texas','Utah','Vermont','Virginia','Virgin Islands', 
     'Washington','West Virginia','Wisconsin','Wyoming')
-states
+ac_data <- ac_data %>% mutate(States = states[STATE])
+
+
+#creating a data frame with all of the county codes
+county_codes <- gsa_codes %>% select( County.Code , County.Name )
+
+ac_data <- ac_data %>% left_join(county_codes, by = c)
+# data frame with states and total persons in accidents
+states_and_persons <- ac_data %>% group_by(States) %>% summarize(sum = sum(PERSONS))
+
+
+
