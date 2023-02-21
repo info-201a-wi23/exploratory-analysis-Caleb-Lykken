@@ -53,12 +53,94 @@ What challenges or limitations might you need to address with your project idea 
 ### Summary Information
 
 Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
+```{r, warning=F, message=F}
+# Packages
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Read dataset
+Dt <- read.csv('accident.csv')
+head(Dt)
+
+# Factor for categorical variables
+## STATE
+States <- read.csv('States.csv')
+Dt <- left_join(Dt, States, by = 'STATE')
+## WEATHER
+Weather <- read.csv('weather.csv')
+Dt <- left_join(Dt, Weather, by = 'WEATHER1')
+
+# Extract columns
+Variable <- c('States', "DAY", "MONTH", 'YEAR', 'DAY_WEEK','LATITUDE','LONGITUD','Weather','ARR_HOUR','ARR_MIN','DRUNK_DR')
+Dt.Table <- Dt[, Variable]
+head(Dt.Table)
+
+## Number_of_Cases_Stratified_Weather
+summary_info <- list()
+summary_info$'Number_of_Cases_Stratified_Weather' <- Dt.Table %>% group_by(States) %>% select(States, Weather) %>% table()
+
+## Rank_of_Cases
+Rank_of_Cases <- Dt.Table %>% group_by(States) %>% select(States) %>% count()
+Rank_of_Cases <- Rank_of_Cases[order(Rank_of_Cases$n, decreasing = T), ]
+summary_info$'Rank_of_Cases' <- Rank_of_Cases
+
+## Max cases of accidents
+summary_info$'Number_of_Cases_in_Each_Week'<- Dt.Table %>% select(DAY_WEEK) %>% table()
+
+## Case involved drunk driver
+summary_info$'Case_involved_Drunk_Driver' <- Dt.Table %>% group_by(States) %>% filter(DRUNK_DR != 0) %>% select(States) %>% count()
+
+## Average arrival time
+Dt.Table$ARR_MIN <- ifelse(Dt.Table$ARR_MIN < 60, Dt.Table$ARR_MIN / 60 , NA)
+Dt.Table$ARR_HOUR <- ifelse(Dt.Table$ARR_HOUR < 24, Dt.Table$ARR_HOUR, NA)
+Dt.Table$'EMS_Arrival_Time' <- round(Dt.Table$ARR_HOUR + Dt.Table$ARR_MIN, 2)
+summary_info$'Average_Arrival_Time_for_Each_State' <- Dt.Table %>% select(States, EMS_Arrival_Time) %>% group_by(States) %>% summarise(Mean = round(mean(EMS_Arrival_Time, na.rm = T), 2))
+
+summary_info
+```
+
 
 ### Table
 
 Include a table of aggregate information
 
 Describe why you included the table and what information it reveals
+```{r, warning=F, message=F}
+# count of cases
+state_case <- table(Dt.Table$States, useNA = 'ifany')
+State.Name <- names(state_case)
+state_case <- matrix(state_case, ncol = 1, nrow = length(State.Name), dimnames = list(State.Name, 'Number_of_Cases'))
+state_case <- data.frame('States' = rownames(state_case), state_case)
+
+# case in Rain
+Death_in_Rain <- Dt.Table %>% group_by(States) %>% filter(Weather == "Rain") %>% select(States) %>% count()
+colnames(Death_in_Rain)[2] <- 'Number_of_Cases_in_Rainy_Day' 
+
+Summary_Table <- left_join(state_case, Death_in_Rain, by = 'States')
+
+# case in 2018
+Case_in_2015 <- Dt.Table %>% group_by(States) %>% filter(YEAR == 2015) %>% select(States) %>% count()
+colnames(Case_in_2015)[2] <- 'Number_of_Cases_in_2015' 
+
+Summary_Table <- left_join(Summary_Table, Case_in_2015, by = 'States')
+
+# case involved drunk driver
+Case_involved_Drunk_Driver <- Dt.Table %>% group_by(States) %>% filter(DRUNK_DR != 0) %>% select(States) %>% count()
+colnames(Case_involved_Drunk_Driver)[2] <- 'Number_of_Cases_involved_Drunk_Driver' 
+
+Summary_Table <- left_join(Summary_Table, Case_involved_Drunk_Driver, by = 'States')
+
+# Longest EMS arrival time
+Longest_EMS_Arrival_Time <- Dt.Table %>% group_by(States) %>% summarise(EMS_Arrival_Time = max(EMS_Arrival_Time, na.rm = T))
+
+Summary_Table <- left_join(Summary_Table, Longest_EMS_Arrival_Time, by = 'States')
+
+Summary_Table
+
+# write.csv(Dt.Table, 'Accident Dataset (Cleaned).csv')
+```
+
 
 ### Chart 1
 
