@@ -234,9 +234,3 @@ ggplot(data = states_and_persons_clean, aes(y = States, x = sum)) +
 
 Describe why you chose this chart and what information it reveals - TYLER
 
-<<<<<<< HEAD
-=======
-Describe why you chose this chart and what information it reveals
-
-I decided to choose this chart due to how I was curious to see the correlation between accidents and state. The chart revealed that the states with the highest amount of accidents were Virginia, Colorado and Hawaii while Georgia, Washington and Tennessee had the lowest amount of accidents. If I were to go a step further I would check the fatality rate based on state and see if I can draw a connection.
->>>>>>> dec9136715c20997de9a526bc2b9add7d26cec83
