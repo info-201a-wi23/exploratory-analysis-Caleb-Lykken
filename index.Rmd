@@ -159,6 +159,14 @@ Include a chart
 
 Describe why you chose this chart and what information it reveals
 
+This is because weather conditions may have an impact on traffic accidents, which can lead to more injuries or fatalities. For example, adverse weather conditions may lead to slippery roads, poor visibility, and poor vehicle control, which may increase the risk of traffic accidents. Therefore, analyzing the link between the number of accident deaths and injuries and weather helps us to better understand the impact of weather conditions on traffic accidents and take appropriate measures to reduce the incidence of traffic accidents and decrease the number of casualties.
+At the same time, through the table, we found that it is true that the weather such as cloudy and rainy weather will increase the number of deaths and injuries in accidents. However, most of the serious injuries are during clear weather, which proves that the main reason for the number of serious injuries is not the weather.
+
+
+``````{r, echo = FALSE, code = readLines("chart2_QINGDENG.R")}
+```
+
+
 ### Chart 3
 
 Include a chart
